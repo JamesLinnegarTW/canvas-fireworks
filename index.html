@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Canvas</title>
+		  	<meta name="viewport" content = "width = device-width, initial-scale = 1, user-scalable = no" />
+		  	<meta name="apple-mobile-web-app-capable" content="yes" />
+		  	
+		<style type=text/css>
+			* {
+				margin:0;
+				border:0;
+				padding:0;
+				background-color:black;
+			}
+			canvas {
+				width:100%;
+				height: 100%;
+				
+			}
+		</style>
+	</head>
+	<body>
+	<canvas id="canvas"></canvas>
+	
+	<script type="text/javascript">
+	window.onload = function(){
+	var canvas = document.getElementById("canvas");
+	var ctx = canvas.getContext("2d");
+	var imageObj = new Image();
+    imageObj.src = './ThoughtWorks-logo.png';
+
+	//Make the canvas occupy the full page
+	var W = window.innerWidth, H = window.innerHeight;
+	canvas.width = W;
+	canvas.height = H;
+	
+	var particles = [];
+	var mouse = {};
+	var fingers = [];
+	var touching = false;
+	var particle_count = 100;
+	fingers.push(mouse);
+	
+	//Lets create some particles now
+	function createParticles(e){
+		mouse.x = e.touches[0].pageX;
+		mouse.y = e.touches[0].pageY;
+		
+		touching = true;
+		
+		for(var i = particles.length; i < particle_count; i++)
+		{
+			particles.push(new particle());
+		}
+	}	
+	
+	//finally some mouse tracking
+	canvas.addEventListener('touchstart',createParticles ,false);
+	canvas.addEventListener('touchmove', track_finger, false);
+	canvas.addEventListener('touchend',function(){ touching = false; },false);
+	
+	function track_finger(e)
+	{
+		e.preventDefault();
+		mouse.x = e.touches[0].pageX;
+		mouse.y = e.touches[0].pageY;
+	}
+	
+	function particle()
+	{
+
+		this.speed = {x: -10+Math.random()*20, y: -10+Math.random()*20};
+		
+		if(mouse.x && mouse.y) {
+			this.location = {x: mouse.x, y: mouse.y};
+		} else {
+			this.location = {x: W/2, y: H/2};
+		}
+		
+		this.radius = 10+Math.random()*10;
+		
+		this.life = 100+Math.random()*10;
+		this.remaining_life = this.life;
+		
+		this.r = Math.round(Math.random()*255);
+		this.g = Math.round(Math.random()*255);
+		this.b = Math.round(Math.random()*255);
+	}
+	
+	function draw() {
+		ctx.globalCompositeOperation = "source-over";
+	
+		ctx.fillStyle = "black";
+		ctx.fillRect(0, 0, W, H);
+		
+			
+		ctx.globalCompositeOperation = "lighter";
+		for(var j = 0; j < fingers.length; j++){
+			if(particles.length > 0){
+			
+				for(var i = 0; i < particles.length; i++)
+				{
+				
+					var p = particles[i];
+					if( p ) {
+						ctx.beginPath();
+						p.opacity = Math.round(p.remaining_life/p.life*100)/100
+						var gradient = ctx.createRadialGradient(p.location.x, p.location.y, 0, p.location.x, p.location.y, p.radius);
+						gradient.addColorStop(0, "rgba("+p.r+", "+p.g+", "+p.b+", "+p.opacity+")");
+						gradient.addColorStop(0.5, "rgba("+p.r+", "+p.g+", "+p.b+", "+p.opacity+")");
+						gradient.addColorStop(1, "rgba("+p.r+", "+p.g+", "+p.b+", 0)");
+						ctx.fillStyle = gradient;
+						ctx.arc(p.location.x, p.location.y, p.radius, Math.PI*2, false);
+						ctx.fill();
+					
+						p.remaining_life--;
+						p.radius--;
+						p.location.x += p.speed.x;
+						p.location.y += p.speed.y;
+					
+						//regenerate particles
+						if((p.remaining_life < 0 || p.radius < 0) )
+						{
+							if(touching){
+								particles[i] = new particle();
+							} else {
+								particles.splice(i,1);
+								i--;
+							}
+						}
+					}
+				}
+			}
+		}
+	    ctx.drawImage(imageObj, (W/2) - (250/2), (H/2) - (75 / 2));
+	}
+	
+	setInterval(draw, 33);
+}
+	
+	</script>
+	</body>
+</html>
