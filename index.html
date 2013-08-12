@@ -35,7 +35,7 @@
 	canvas.height = H;
 	
 	var fireworks = [];
-	var particle_count = 400;
+	var particle_count = 200;
 
 	function Firework(){
 		var x = Math.random()*W;
@@ -47,7 +47,7 @@
 			b : Math.round(Math.random()*255)
 		};
 		
-		for(var i = particles.length; i < Math.random() * particle_count; i++) {	
+		for(var i = particles.length; i < Math.random() * particle_count + 50; i++) {	
 			particles.push(new Particle(x, y, color));
 		}
 		
@@ -66,11 +66,11 @@
 	{
 		var distance = (Math.random() * 10);
 		
-		this.speed = {x: -distance+Math.random()*(2 * distance), y: -distance+Math.random()*(2 * distance)};
+		this.speed = {x: -distance+Math.random()*(2 * distance), y: (-distance+Math.random()*(2 * distance) - (distance/2)) };
 		
 		this.location = {x: x, y: y};
 		
-		this.radius = 10+Math.random()*10;
+		this.radius = 10+Math.random()*20;
 		
 		this.life = 100+Math.random()*10;
 		this.remaining_life = this.life;
@@ -94,7 +94,7 @@
 			this.radius--;
 			this.location.x += this.speed.x;
 			this.location.y += this.speed.y;
-			this.speed.y = this.speed.y +0.25;
+			this.speed.y = this.speed.y +0.6;
 			if((this.remaining_life < 0 || this.radius < 0) ) {
 				return false;
 			} else {
@@ -127,15 +127,15 @@
 	    ctx.drawImage(imageObj, (W/2) - (250/2), (H/2) - (75 / 2));
 	}
 	function bang(){
-		for(var i = 0; i < 100 * Math.random(); i++){
+		for(var i = 0; i < 30 * Math.random(); i++){
 			setTimeout(function(){
 				fireworks.push(new Firework());
-			}, Math.random() * 2000);
+			}, Math.random() * 3000);
 
 		}
 		setTimeout(function(){
 			bang();
-		}, Math.random() * 2000);
+		}, Math.random() * 3000);
 	}
 	bang();
 	setInterval(draw,50);
