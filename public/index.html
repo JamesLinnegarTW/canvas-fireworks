@@ -116,17 +116,12 @@
 		}
 		
 		function resetCanvas(){
-			
-			/*
 			ctx.globalCompositeOperation = "source-over";
 			ctx.fillStyle = "black";
 			ctx.fillRect(0, 0, W, H);
-			*/
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
 		}
 		
 		function draw() {
-			resetCanvas();
 			ctx.globalCompositeOperation = "lighter";
 				if(fireworks.length > 0){
 			
@@ -142,10 +137,6 @@
 				}
 			ctx.globalCompositeOperation="source-over";
 		    ctx.drawImage(imageObj, (W/2) - (250/2), (H/2) - (75 / 2));
-		
-		    requestAnimFrame(function() {
-	          draw();
-	        });
 		}
 	
 		function bang(){
@@ -159,16 +150,8 @@
 				bang();
 			}, Math.random() * 3000);
 		}
-
-		window.requestAnimFrame = (function(callback) {
-        	return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
-	        function(callback) {
-	          window.setTimeout(callback, 1000 / 60);
-	        };
-	      })();
-      
-		draw();
 		bang();
+		setInterval(draw,50);
 	})();
 	
 	</script>
