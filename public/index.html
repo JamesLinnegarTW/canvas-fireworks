@@ -48,7 +48,7 @@
 			};
 			var particleSize = Math.round(Math.random()*15) + 5;
 			var bang = (Math.random() * 15) + 5;
-			var direction = Math.random();
+			var direction = (Math.random() / 2);
 			
 			if(Math.floor((Math.random()*2)-1) == 0){
 				direction = -direction;
@@ -122,6 +122,7 @@
 		}
 		
 		function draw() {
+			resetCanvas();
 			ctx.globalCompositeOperation = "lighter";
 				if(fireworks.length > 0){
 			
