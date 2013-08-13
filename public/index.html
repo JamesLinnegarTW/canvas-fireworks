@@ -46,9 +46,11 @@
 			g : Math.round(Math.random()*255),
 			b : Math.round(Math.random()*255)
 		};
+		var particleSize = Math.round(Math.random()*15) + 5;
+		var bang = (Math.random() * 15) + 5;
 		
 		for(var i = particles.length; i < Math.random() * particle_count + 50; i++) {	
-			particles.push(new Particle(x, y, color));
+			particles.push(new Particle(x, y, color, particleSize, bang));
 		}
 		
 		this.draw = function(ctx){
@@ -62,15 +64,15 @@
 		};
 	};
 
-	function Particle(x, y, color)
+	function Particle(x, y, color, particleSize, bang)
 	{
-		var distance = (Math.random() * 10);
+		var distance = (Math.random() * bang);
 		
 		this.speed = {x: -distance+Math.random()*(2 * distance), y: (-distance+Math.random()*(2 * distance) - (distance/2)) };
 		
 		this.location = {x: x, y: y};
 		
-		this.radius = 10+Math.random()*20;
+		this.radius = 10+Math.random()*(particleSize);
 		
 		this.life = 100+Math.random()*10;
 		this.remaining_life = this.life;
@@ -82,10 +84,12 @@
 		this.draw = function(ctx){
 			ctx.beginPath();
 			this.opacity = Math.round(this.remaining_life/this.life*100)/100
+			
 			var gradient = ctx.createRadialGradient(this.location.x, this.location.y, 0, this.location.x, this.location.y, this.radius);
 			gradient.addColorStop(0, "rgba("+this.r+", "+this.g+", "+this.b+", "+this.opacity+")");
 			gradient.addColorStop(0.5, "rgba("+this.r+", "+this.g+", "+this.b+", "+this.opacity+")");
 			gradient.addColorStop(1, "rgba("+this.r+", "+this.g+", "+this.b+", 0)");
+			
 			ctx.fillStyle = gradient;
 			ctx.arc(this.location.x, this.location.y, this.radius, Math.PI*2, false);
 			ctx.fill();
