@@ -28,6 +28,9 @@
 		var ctx = canvas.getContext("2d");
 		var imageObj = new Image();
 	    imageObj.src = './ThoughtWorks-logo.png';
+	
+			var city = new Image();
+		    city.src = './city.png';
 
 		var W = window.innerWidth, H = window.innerHeight;
 
@@ -35,7 +38,7 @@
 		canvas.height = H;
 	
 		var fireworks = [];
-		var particle_count = 200;
+		var particle_count = W  * 0.25;
 
 		function Firework(){
 			var x = Math.random()*W;
@@ -47,7 +50,7 @@
 				b : Math.round(Math.random()*255)
 			};
 			var particleSize = Math.round(Math.random()*15) + 5;
-			var bang = (Math.random() * 15) + 5;
+			var bang = (Math.random() * (W * 0.02)) + 5;
 			var direction = (Math.random() / 2);
 			
 			if(Math.floor((Math.random()*2)-1) == 0){
@@ -138,10 +141,11 @@
 				}
 			ctx.globalCompositeOperation="source-over";
 		    ctx.drawImage(imageObj, (W/2) - (250/2), (H/2) - (75 / 2));
+			//ctx.drawImage(city, 0, H-400, W, 400);
 		}
 	
 		function bang(){
-			for(var i = 0; i < 30 * Math.random(); i++){
+			for(var i = 0; i < (W * 0.02) * Math.random(); i++){
 				setTimeout(function(){
 					fireworks.push(new Firework());
 				}, Math.random() * 3000);
