@@ -17,17 +17,59 @@
 				height: 100%;
 				
 			}
+			#text {
+				z-index:10;
+				position:absolute;
+				left:0;
+				top:0;
+				color:white;
+			}
 		</style>
 	</head>
 	<body>
 	<canvas id="canvas"></canvas>
-	
+	<div id="text"></div>
 	<script type="text/javascript">
+	
+	// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+	// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+
+	// requestAnimationFrame polyfill by Erik Möller
+	// fixes from Paul Irish and Tino Zijdel
+
+	(function() {
+	    var lastTime = 0;
+	    var vendors = ['ms', 'moz', 'webkit', 'o'];
+	    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+	        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+	        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
+	                                   || window[vendors[x]+'CancelRequestAnimationFrame'];
+	    }
+
+	    if (!window.requestAnimationFrame)
+	        window.requestAnimationFrame = function(callback, element) {
+	            var currTime = new Date().getTime();
+	            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+	            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+	              timeToCall);
+	            lastTime = currTime + timeToCall;
+	            return id;
+	        };
+
+	    if (!window.cancelAnimationFrame)
+	        window.cancelAnimationFrame = function(id) {
+	            clearTimeout(id);
+	        };
+	}());
+	
+	
 	(function(){
 		var canvas = document.getElementById("canvas");
 		var ctx = canvas.getContext("2d");
 		var imageObj = new Image();
 		var lastRender = new Date();
+
+		var t = document.getElementById('text');
 		
 	    imageObj.src = './ThoughtWorks-logo.png';
 	
@@ -77,7 +119,7 @@
 		function Particle(x, y, color, particleSize, bang, direction)
 		{
 			var distance = (Math.random() * bang);
-		
+			var startTime = new Date();
 			var speed = {x: -distance+Math.random()*(2 * distance), 
 						 y: (-distance+Math.random()*(2 * distance) - (distance/2)) };
 		
@@ -93,8 +135,8 @@
 			this.b = color.b;
 	
 			this.draw = function(ctx){
-				var delta = (new Date() - lastRender) / 33; // frame rate we're aiming for
-				
+				var delta = (new Date() - (startTime || new Date())) / 50;
+
 				ctx.beginPath();
 				opacity = Math.round(remaining_life/life*100)/100
 			
@@ -108,7 +150,7 @@
 				ctx.fill();
 		
 				remaining_life = remaining_life - (1 * delta);
-				radius = radius  - (1 * delta);
+				radius = radius - (1 * delta);
 				
 				location.x += (speed.x * delta);
 				location.y += (speed.y * delta);
@@ -132,7 +174,7 @@
 				
 				speed.y = speed.y + (0.6 * delta);
 				speed.x = speed.x + (direction * delta);
-			
+				startTime = new Date();
 				if((remaining_life < 0 || radius < 0) ) {
 					return false; //kill the particle
 				} else {
@@ -172,22 +214,25 @@
 		
 			ctx.drawImage(tmpCanvas, 0, 0);
 			lastRender = new Date();
-			requestAnimationFrame(draw);
+			
+			requestAnimationFrame(draw, canvas);
 		}
 	
 		function bang(){
 			for(var i = 0; i < (W * 0.03) * Math.random(); i++){
 				setTimeout(function(){
-					fireworks.push(new Firework());
+					if(fireworks.length < (W * 0.03)){
+						fireworks.push(new Firework());			
+					}
 				}, Math.random() * 3000);
-
 			}
+
 			setTimeout(function(){
 				bang();
-			}, Math.random() * 3000);
+			}, Math.random() * 5000);
 		}
 		bang();
-		draw();
+		requestAnimationFrame(draw, canvas);
 	})();
 	
 	</script>
