@@ -27,6 +27,8 @@
 		var canvas = document.getElementById("canvas");
 		var ctx = canvas.getContext("2d");
 		var imageObj = new Image();
+		var lastRender = new Date();
+		
 	    imageObj.src = './ThoughtWorks-logo.png';
 	
 			var city = new Image();
@@ -41,8 +43,8 @@
 		var particle_count = W  * 0.25;
 
 		function Firework(){
-			var x = Math.random()*W;
-			var y = Math.random()*H;
+			var x =Math.round (Math.random()*W);
+			var y = Math.round (Math.random()*H);
 			var particles = [];
 			var color = {
 				r : Math.round(Math.random()*255),
@@ -91,6 +93,8 @@
 			this.b = color.b;
 	
 			this.draw = function(ctx){
+				var delta = (new Date() - lastRender) / 33; // frame rate we're aiming for
+				
 				ctx.beginPath();
 				opacity = Math.round(remaining_life/life*100)/100
 			
@@ -103,10 +107,11 @@
 				ctx.arc(location.x, location.y, radius, Math.PI*2, false);
 				ctx.fill();
 		
-				remaining_life--;
-				radius--;
-				location.x += speed.x;
-				location.y += speed.y;
+				remaining_life = remaining_life - (1 * delta);
+				radius = radius  - (1 * delta);
+				
+				location.x += (speed.x * delta);
+				location.y += (speed.y * delta);
 				
 				if(location.y > H){
 					location.y = H;
@@ -125,8 +130,8 @@
 					speed.x = -(speed.x *0.6);
 				}
 				
-				speed.y = speed.y +0.6;
-				speed.x = speed.x + direction;
+				speed.y = speed.y + (0.6 * delta);
+				speed.x = speed.x + (direction * delta);
 			
 				if((remaining_life < 0 || radius < 0) ) {
 					return false; //kill the particle
@@ -136,30 +141,38 @@
 			};
 		}
 		
-		function resetCanvas(){
-			ctx.globalCompositeOperation = "source-over";
-			ctx.fillStyle = "black";
-			ctx.fillRect(0, 0, W, H);
+		function resetCanvas(rCtx){
+		
+			rCtx.fillStyle = "black";
+			rCtx.fillRect(0, 0, W, H);
 		}
 		
 		function draw() {
-			resetCanvas();
-			ctx.globalCompositeOperation = "lighter";
+			var tmpCanvas = document.createElement('canvas');
+			tmpCanvas.width = W;
+			tmpCanvas.height = H;
+			var tmpCtx = tmpCanvas.getContext("2d");
+			
+			resetCanvas(tmpCtx);
+			tmpCtx.globalCompositeOperation = "lighter";
 				if(fireworks.length > 0){
 			
 					for(var i = 0; i < fireworks.length; i++)
 					{
-				
+
 						var f = fireworks[i];
-						if(!f.draw(ctx)){
+						if(!f.draw(tmpCtx)){
 							fireworks.splice(i,1);
 							i--;
 						}
 					}
 				}
-			ctx.globalCompositeOperation="source-over";
-		    ctx.drawImage(imageObj, (W/2) - (250/2), (H/2) - (75 / 2));
-			//ctx.drawImage(city, 0, H-400, W, 400);
+			tmpCtx.globalCompositeOperation="source-over";
+		    tmpCtx.drawImage(imageObj, (W/2) - (250/2), (H/2) - (75 / 2));
+		
+			ctx.drawImage(tmpCanvas, 0, 0);
+			lastRender = new Date();
+			requestAnimationFrame(draw);
 		}
 	
 		function bang(){
@@ -174,7 +187,7 @@
 			}, Math.random() * 3000);
 		}
 		bang();
-		setInterval(draw,50);
+		draw();
 	})();
 	
 	</script>
