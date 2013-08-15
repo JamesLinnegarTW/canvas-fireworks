@@ -81,6 +81,15 @@
 		canvas.width = W;
 		canvas.height = H;
 	
+	
+		               window.onresize = function(){
+		                       W = window.innerWidth;
+		                       H = window.innerHeight;
+	                       canvas.width = W;
+		                       canvas.height = H;
+		                       
+		               };
+		
 		var fireworks = [];
 		var particle_count = W  * 0.25;
 
