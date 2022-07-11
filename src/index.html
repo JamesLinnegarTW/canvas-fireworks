@@ -66,15 +66,12 @@
 	(function(){
 		var canvas = document.getElementById("canvas");
 		var ctx = canvas.getContext("2d");
-		var imageObj = new Image();
+
 		var lastRender = new Date();
 
 		var t = document.getElementById('text');
 		
-	    imageObj.src = './ThoughtWorks-logo.png';
-	
-			var city = new Image();
-		    city.src = './city.png';
+	    
 
 		var W = window.innerWidth, H = window.innerHeight;
 
@@ -219,7 +216,7 @@
 					}
 				}
 			tmpCtx.globalCompositeOperation="source-over";
-		    tmpCtx.drawImage(imageObj, (W/2) - (250/2), (H/2) - (75 / 2));
+
 		
 			ctx.drawImage(tmpCanvas, 0, 0);
 			lastRender = new Date();
